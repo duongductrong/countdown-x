@@ -10,6 +10,12 @@ interface CountdownI {
     months: Number;
     years: Number;
   };
+
+  countdownEvery(
+    eventDate: string | number | Date,
+    options: { ms: number },
+    callback: Function
+  ): void;
 }
 
 class CountDown implements CountdownI {
@@ -18,6 +24,26 @@ class CountDown implements CountdownI {
   fromNow() {
     this.now = new Date();
     return this;
+  }
+
+  countdownEvery(
+    eventDate: string | number | Date,
+    options: { ms: number },
+    callback: Function
+  ) {
+    if (!Number(options?.ms)) {
+      throw new Error(
+        "options { ms: Number } is required and must be a number"
+      );
+    }
+
+    setInterval(() => {
+      if (this.now) {
+        this.fromNow();
+      }
+      
+      callback.call(this, this.countdown(eventDate));
+    }, options.ms ?? 0);
   }
 
   countdown(
